@@ -8,7 +8,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="core" %>
-
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="security"%>
 <style>
 .butn{
     margin-left: 35%;
@@ -30,6 +31,8 @@
 <div class="container">
     <div class="col-md-1"></div>
 
+    You are logged in as <security:authentication property = "principal.username"/>
+
     <div class="col-md-10">
     <hr>
         <table class="table" style="margin-top: 10%">
@@ -39,6 +42,7 @@
                 <th scope="col">Name</th>
                 <th scope="col">Login</th>
                 <th scope="col">Password</th>
+                <th scope="col">Roles</th>
                 <th scope="col"></th>
             </tr>
             </thead>
@@ -49,6 +53,14 @@
                             <td>${user.name}</td>
                             <td>${user.login}</td>
                             <td>${user.password}</td>
+
+                            <td>
+                                <c:forEach items="${user.roles}" var="r">
+                                    ${r.role}
+                                </c:forEach>
+
+                            </td>
+
                            <td>
                                <div class="btn-group" role="group">
                                    <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -57,6 +69,7 @@
                                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                                        <a class="dropdown-item" href="${pageContext.request.contextPath}/editUser?id=${user.id}">Edit</a>
                                        <a class="dropdown-item" href="${pageContext.request.contextPath}/deleteUser?id=${user.id}">Delete</a>
+                                       <a class="dropdown-item" href="${pageContext.request.contextPath}/viewUser?id=${user.id}">View</a>
                                    </div>
                                </div>
                            </td>
@@ -73,7 +86,7 @@
 
         </p>
 
-        <form action="${pageContext.request.contextPath}/addUser", method="post">
+        <form:form action="${pageContext.request.contextPath}/addUser" method="post">
             <div>
                 <div class="row">
                     <div class="col">
@@ -101,19 +114,35 @@
                         </div>
                     </div>
 
+                    <div>
+                        <div class="collapse multi-collapse">
+                                <div class="input-group mb-3">
+                                    <select name="roleParam" class="custom-select" id="inputGroupSelect01">
+                                        <option selected>Choose Role</option>
+                                        <option value="ADMIN">ADMIN</option>
+                                        <option value="USER">USER</option>
+                                    </select>
+                                </div>
+                        </div>
+                    </div>
+
                     <div class="col">
                         <div class="collapse multi-collapse" id="multiCollapseExample4">
                             <div>
-                                <button type="submit" class="btn btn-secondary butn">Submit User</button>
+                               <a><button class="btn btn-secondary butn" >Submit User</button></a>
                             </div>
                         </div>
                     </div>
 
                 </div>
             </div>
-        </form>
+        </form:form>
     </div>
-    <div class="col-md-1"></div>
+    <div class="col-md-1">
+        <div class="float-md-right">
+            <a href="${pageContext.request.contextPath}/logout">Logout</a>
+        </div>
+    </div>
 </div>
 
 <!-- Optional JavaScript -->

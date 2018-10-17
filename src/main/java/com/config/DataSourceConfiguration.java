@@ -7,11 +7,14 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.annotation.Resource;
@@ -20,22 +23,21 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Properties;
 
-
 @Configuration
 @EnableTransactionManagement
 @PropertySource("classpath:application.properties")
 public class DataSourceConfiguration {
 
-    @Resource
     @Autowired
     private Environment environment;
 
     @Bean
-        public DataSource dataSource(){
+    @Resource
+    public DataSource dataSource(){
         DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
         driverManagerDataSource.setDriverClassName(environment.getRequiredProperty("driver"));
         driverManagerDataSource.setUrl(environment.getRequiredProperty("url"));
-        driverManagerDataSource.setUsername("root");
+        driverManagerDataSource.setUsername(environment.getRequiredProperty("uname"));
         driverManagerDataSource.setPassword(environment.getRequiredProperty("userpassword"));
         return driverManagerDataSource;
     }
@@ -59,10 +61,8 @@ public class DataSourceConfiguration {
         Properties properties = new Properties();
         properties.put("hibernate.dialect", environment.getRequiredProperty("hibernate.dialect"));
         properties.put("hibernate.show_sql", environment.getRequiredProperty("hibernate.show_sql"));
-//        properties.put("entitymanager.packages.to.scan", environment.getRequiredProperty("entitymanager.packages.to.scan"));
         properties.put("hibernate.format_sql", environment.getRequiredProperty("hibernate.format_sql"));
         properties.put("hibernate.hbm2ddl.auto", environment.getRequiredProperty("hibernate.hbm2ddl.auto"));
-//        properties.put("spring.jpa.database", environment.getRequiredProperty("spring.jpa.database"));
         return properties;
     }
 

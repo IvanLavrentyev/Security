@@ -1,9 +1,11 @@
 package com.repository;
 
 import com.model.User;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -28,6 +30,7 @@ public class UserRepositoryImpl implements UserRepository{
         newUser.setName(user.getName());
         newUser.setLogin(user.getLogin());
         newUser.setPassword(user.getPassword());
+        newUser.setRoles(user.getRoles());
         entityManager.merge(newUser);
     }
 
@@ -51,5 +54,33 @@ public class UserRepositoryImpl implements UserRepository{
         return users;
     }
 
+    @Override
+    @Transactional
+    public User getUserByLoginAndPassword(String login, String password) {
 
+        Query query = entityManager.createQuery("select u.id from User u where u.login =:login and u.password =:password");
+        query.setParameter("login",  login);
+        query.setParameter("password", password);
+        long id = (Long) query.getSingleResult();
+        return this.getUserById(id);
+    }
+
+    @Override
+    public User getUserByLogin(String login) {
+        Query query = entityManager.createQuery("select u.id from User u where u.login =:login");
+        query.setParameter("login",  login);
+        long id = (Long) query.getSingleResult();
+        return this.getUserById(id);
+    }
+
+    @Override
+    public User getPrincipal() throws IllegalStateException {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal instanceof UserDetails){
+            String userName = ((UserDetails) principal).getUsername();
+            return this.getUserByLogin(userName);
+        }
+        else throw new IllegalStateException("GetPrincipal failed. No such user");
+    }
 }

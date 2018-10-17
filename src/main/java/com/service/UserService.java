@@ -1,11 +1,14 @@
 package com.service;
 
 import com.model.User;
+import com.model.Role;
 import com.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -13,10 +16,14 @@ import java.util.List;
 public class UserService implements UserRepository {
 
     @Autowired
-    UserRepository userRepositoryImpl;
+    private UserRepository userRepositoryImpl;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public void addUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepositoryImpl.addUser(user);
     }
 
@@ -38,5 +45,20 @@ public class UserService implements UserRepository {
     @Override
     public User getUserById(long id) {
         return userRepositoryImpl.getUserById(id);
+    }
+
+    @Override
+    public User getUserByLoginAndPassword(String login, String password) {
+        return userRepositoryImpl.getUserByLoginAndPassword(login,password);
+    }
+
+    @Override
+    public User getUserByLogin(String login) {
+        return userRepositoryImpl.getUserByLogin(login);
+    }
+
+    @Override
+    public User getPrincipal() {
+        return userRepositoryImpl.getPrincipal();
     }
 }

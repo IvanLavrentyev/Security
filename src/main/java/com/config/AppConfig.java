@@ -1,13 +1,11 @@
 package com.config;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.orm.jpa.JpaVendorAdapter;
-import org.springframework.web.servlet.ViewResolver;
+import org.springframework.core.Ordered;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
@@ -26,5 +24,12 @@ public class AppConfig extends WebMvcConfigurerAdapter {
         internalResourceViewResolver.setPrefix("/WEB-INF/views/");
         internalResourceViewResolver.setSuffix(".jsp");
         registry.viewResolver(internalResourceViewResolver);
+    }
+
+//    add method for login custom form
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/login").setViewName("login");
+        registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
     }
 }
